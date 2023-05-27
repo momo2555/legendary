@@ -3,8 +3,6 @@
  * necessary tools
  */
 
-
-
  class Legend {
     constructor(device) {
         this.ws;

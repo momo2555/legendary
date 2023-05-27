@@ -1,10 +1,10 @@
 class MonitorGame {
     constructor (legend) {
-        /*this.legend = legend;
+        this.legend = legend;
         this.stage = 0;
         this.word = "";
         this.brokenWord = "";
-        this.usedLetters = [];*/
+        this.usedLetters = [];
 
     }
     initGame() {

@@ -1,38 +1,59 @@
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const glob = require("glob");
+const { glob } = require("glob");
 const { url } = require('inspector');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
-export class Runner  {
+class Runner  {
 
     constructor (path) {
         this.path = path;
-        this.routes = [];
-        app.use(express.static(this.path + '/images'));
+        this.gameRoutes = [];
+        this.externRoutes = [];
+        //app.use(express.static(this.path + '/images'));
     }
 
     runHttpServer () {
-        this.lanchGame(this.path)
-         //start the http server
-         app.get('*', (req, res) => {
+        this.launchGame(this.path);
+        this.serveExternLibraries();
+        
+        //start the http server
+        app.get('/game/*', (req, res) => {
             //the server is started !!! ;)
-            for(const route of this.routes ) {
+            
+            for(const route of this.gameRoutes ) {
+
                 //send the right page (depending of the url)
+                
+                if(req.url == route.url) {
+                    route.callback(req, res);
+                }
+            }
+            for(const route of this.externRoutes ) {
+                console.log(route);
+                //send the right page (depending of the url)
+                
                 if(req.url == route.url) {
                     route.callback(req, res);
                 }
             }
 
         });
+        /*app.get('/game/lib/*', (req, res) => {
+            //the server is started !!! ;)
+            print("wesh");
+            
+
+        });*/
         app.listen(2226);
     }
 
-    lanchGame(gamePath) {
+    async launchGame(gamePath) {
         //reading the game.json file
         let data = fs.readFileSync(gamePath+'/game.json', {encoding: 'utf8'});
         //parse json
@@ -40,65 +61,105 @@ export class Runner  {
         //fetch in the games folder for all files
         let gameFolder = gamePath;
         //add files in the htto route
-        glob(gameFolder + "/**", (err, files) => {
-            for(const file of files){
-                if(fs.existsSync(file)){
-                    var url = file.replace(gameFolder, '');
-                    if(! this.routeExists(url) ) {
-                        this.routes.push({
-                            url: url,
-                            callback: (req, res) => {
-                                res.setHeader("Content-Type",this.getContentType(file));
-                                res.writeHead(200);
-                                fs.readFile(file, (err, data)=>{
-                                    res.end(data);
-                                });
-                            }
-                        });
-                    }
+        
+        let files  = await glob(gameFolder+"/**");
+        for(const file of files){
+            if(fs.existsSync(file)){
+                //windows :
+                var url = file.replaceAll("\\", "/");
+                // ------
+                url = url.replace(path.basename(gameFolder), '/game');
+                
+                if(! this.gameRouteExists(url) ) {
+                    this.gameRoutes.push({
+                        url: url,
+                        callback: (req, res) => {
+                            res.setHeader("Content-Type",this.getContentType(file));
+                            res.writeHead(200);
+                            fs.readFile(file, (err, data)=>{
+                                res.end(data);
+                            });
+                        }
+                    });
+                }else {
                     
                 }
+                
             }
-        });
+        }
+        
         //the game is launched
     }
 
     getContentType(file) {
         let contentType = "";
-                let ext = "";
-                let fileSplit = file.split('.');
-                let lastInedx = fileSplit.length - 1;
-                if(fileSplit[lastInedx]!=null) {
-                    ext = fileSplit[lastInedx];
-                    switch(ext) {
-                        case 'html':
-                            contentType = "text/html";
-                            break
-                        case 'css':
-                            contentType = "text/css";
-                            break;
-                        case 'css':
-                            contentType = "text/javascript";
-                            break;
-                        case 'png', 'jpeg', 'bmp', 'gif', 'webp', 'jpg':
-                            contentType = "image/" + ext;
-                            break;
-                        case 'mp3', 'midi', 'mpeg', 'webm', 'ogg', 'wav':
-                            contentType = "audio/"+ext;
-                            break;
-                        case 'pdf', 'xml':
-                            contentType = "application/"+ext;
-                    }
-                    return contentType;
-                }
+        let ext = path.extname(file);
+        console.log(ext);
+        switch(ext) {
+            case 'html':
+                contentType = "text/html";
+                break
+            case 'css':
+                contentType = "text/css";
+                break;
+            case 'css':
+                contentType = "text/javascript";
+                break;
+            case 'png', 'jpeg', 'bmp', 'gif', 'webp', 'jpg':
+                contentType = "image/" + ext;
+                break;
+            case 'mp3', 'midi', 'mpeg', 'webm', 'ogg', 'wav':
+                contentType = "audio/"+ext;
+                break;
+            case 'pdf', 'xml':
+                contentType = "application/"+ext;
+        }
+            return contentType;
+                
     }
 
-    routeExists(routeUrl) {
+    gameRouteExists(routeUrl) {
         let exist = false;
-        for(let route in this.routes) {
+        for(let route in this.gameRoutes) {
+            if(route.url == routeUrl) exist = true;
+        }
+        return exist;
+    }
+    externRouteExists(routeUrl) {
+        let exist = false;
+        for(let route in this.externRoute) {
             if(route.url == routeUrl) exist = true;
         }
         return exist;
     }
 
+    async serveExternLibraries() {
+        let externFolder = "./extern"
+        let files  = await glob(externFolder+"/**");
+        for(const file of files){
+            if(fs.existsSync(file)){
+                //windows :
+                var url = file.replaceAll("\\", "/");
+                // ------
+                url = url.replace(path.basename(externFolder), '/game/lib');
+                console.log(url);
+                if(! this.externRouteExists(url) ) {
+                    this.externRoutes.push({
+                        url: url,
+                        callback: (req, res) => {
+                            res.setHeader("Content-Type",this.getContentType(file));
+                            res.writeHead(200);
+                            fs.readFile(file, (err, data)=>{
+                                res.end(data);
+                            });
+                        }
+                    });
+                }
+                
+            }
+        }
+    }
+
 }
+
+module.exports = Runner;
