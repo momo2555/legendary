@@ -21,6 +21,7 @@
         this.ws = new WebSocket("ws://localhost:2225");
         
     }
+    
     /**
      * 
      * @param {Object} data must be a js object

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="controller-section" id="stage-1">
+        <p>
+            Choose your word
+        </p>
+        <div>
+            <input type="text" name="" id="word-field">
+            <button id="next">Next</button>
+        </div>
+
+    </div>
+    <div id="stage-1">
+        <p>
+            Choose a letter
+        </p>
+        <div>
+            <input type="text" name="" id="word-field">
+            <button id="choose">Choose</button>
+        </div>
+
+    </div>
+    
+    
+    <script src="lib/jquery.js"></script>
+    <script src="lib/legend.js"></script>
+    <script src="scripts/game.controller.js"></script>
+    <script>
+        var legend = new Legend('monitor');
+        legend.onReady(() => {
+            //start page script
+            new ControllerGame(legend);
+        });
+        
+        
+
+    </script>
+</body>
+</html>

@@ -9,11 +9,13 @@ app.use(bodyParser.json());
 
 
 export class Runner  {
+
     constructor (path) {
         this.path = path;
         this.routes = [];
         app.use(express.static(this.path + '/images'));
     }
+
     runHttpServer () {
         this.lanchGame(this.path)
          //start the http server
@@ -29,6 +31,7 @@ export class Runner  {
         });
         app.listen(2226);
     }
+
     lanchGame(gamePath) {
         //reading the game.json file
         let data = fs.readFileSync(gamePath+'/game.json', {encoding: 'utf8'});
@@ -40,9 +43,7 @@ export class Runner  {
         glob(gameFolder + "/**", (err, files) => {
             for(const file of files){
                 if(fs.existsSync(file)){
-                    
                     var url = file.replace(gameFolder, '');
-                    
                     if(! this.routeExists(url) ) {
                         this.routes.push({
                             url: url,
@@ -60,9 +61,8 @@ export class Runner  {
             }
         });
         //the game is launched
-       
-        
     }
+
     getContentType(file) {
         let contentType = "";
                 let ext = "";
@@ -92,6 +92,7 @@ export class Runner  {
                     return contentType;
                 }
     }
+
     routeExists(routeUrl) {
         let exist = false;
         for(let route in this.routes) {
