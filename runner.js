@@ -7,11 +7,12 @@ const { url } = require('inspector');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static('./app/image'));
+
 export class Runner  {
     constructor (path) {
         this.path = path;
         this.routes = [];
+        app.use(express.static(this.path + '/images'));
     }
     runHttpServer () {
         this.lanchGame(this.path)
