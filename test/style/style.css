@@ -1,5 +1,9 @@
+* {
+    box-sizing: content-box;
+}
 body {
     background-color: #275327;
+    margin: 0;
 }
 #monitor {
     width: 100%;
@@ -12,6 +16,16 @@ body {
     display: flex;
     height: 100%;
     width: 100%;
+    flex-direction: column;
+}
+#body-controller {
+    display: flex;
+}
+#controller {
+    margin: auto;
+}
+#controller p {
+    color: white;
 }
 #background-pres h1 {
     font-size: 130px;
@@ -19,4 +33,33 @@ body {
     color: white;
     font-weight: 200;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+#lives {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    display: flex;
+}
+#lives img {
+    margin: auto;
+}
+#lives h3 {
+    color: white;
+    margin-left: 15px;
+}
+#lose {
+    background-color: white;
+    color: red;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 50px;
+    margin: auto;
+}
+#win {
+    background-color: white;
+    color: green;
+    border-radius: 20px;
+    padding: 20px;
+    font-size: 50px;
+    margin: auto;
 }

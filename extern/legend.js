@@ -17,7 +17,9 @@
     }
     initConnection() {
         this.ws = new WebSocket("ws://localhost:2225");
-        
+        this.ws.addEventListener('open', (e) => {
+            this.identification();
+        });
     }
     
     /**
@@ -81,7 +83,7 @@
                    this.exeRequestListeners(request, data);
                    switch(request) {
                        case 'changeState':
-                            this.state = data.request.params.state;
+                        this.state = data.request.params.state;
                            this.exeStateListeners(data.header.from, data.request.params.state);
                            
                        break;
