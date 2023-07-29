@@ -1,2 +1,2 @@
-const main = require("./index.js");
+const main = require("./main.js");
 main.run();
