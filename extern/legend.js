@@ -15,8 +15,10 @@
         this.initConnection();
         this.initMessagesEvent();
     }
+    
     initConnection() {
-        this.ws = new WebSocket("ws://localhost:2225");
+        this.hostname = window.location.hostname;
+        this.ws = new WebSocket("ws://" + this.hostname + ":2225");
         this.ws.addEventListener('open', (e) => {
             this.identification();
         });
@@ -60,6 +62,7 @@
         };
         this.send(dataToSend);
     }
+
     send(data) {
         let strData = JSON.stringify(data);
         this.ws.send(strData);
@@ -109,36 +112,44 @@
             }
         }
     }
+
     exeDataListeners(from, data) {
         for(const listener of this.dataEvents) {
             listener(from, data);
         }
     }
+
     exeStateListeners(from, state) {
         for(const listener of this.stateEvents) {
             listener(from, state);
         }
     }
+
     exeLaunchListeners(from, gameId) {
         for(const listener of this.launchEvents) {
             listener(from, gameId);
         }
     }
+
     onRequest(request, callback) {
         this.requestEvents.push({
             request: request,
             callback: callback
         });
     }
+
     onStateChange(callback) {
         this.stateEvents.push(callback);
     }
+
     onData (callback) {
         this.dataEvents.push(callback);
     }
+
     onLaunch(callback) {
         this.launchEvents.push(callback);
     }
+
     setState(state) {
         let dataToSend = {
             header : {
@@ -156,9 +167,11 @@
         };
         this.send(dataToSend);
     }
+
     getState() {
         return this.state;
     }
+
     launchGame(game) {
         if(this.device=='monitor') {
             //lancement du jeu
@@ -166,4 +179,5 @@
             window.location.href = '/'+game.monitor;
         }
     }
+
 }
