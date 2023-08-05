@@ -5,7 +5,7 @@ exports.run =  function (path = "") {
     if(path == "") {
         path = config.serverPath;
     }
-    let runner = new Runner(config.serverPath);
+    let runner = new Runner(path);
     runner.runHttpServer();
 
 }
