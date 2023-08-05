@@ -19,7 +19,9 @@
     initConnection() {
         this.hostname = window.location.hostname;
         this.ws = new WebSocket("ws://" + this.hostname + ":2225");
+        console.log("try to open ws ... ");
         this.ws.addEventListener('open', (e) => {
+            console.log("open a websocket success");
             this.identification();
         });
     }

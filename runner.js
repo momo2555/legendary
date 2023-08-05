@@ -134,7 +134,7 @@ class Runner  {
     }
 
     async serveExternLibraries() {
-        let externFolder = "./extern"
+        let externFolder = __dirname + "/extern";
         let files  = await glob(externFolder+"/**");
         for(const file of files){
             if(fs.existsSync(file)){
