@@ -1,2 +1,2 @@
 const main = require("./main.js");
-main.run();
+main.run("./test");

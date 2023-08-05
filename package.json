@@ -14,7 +14,7 @@
     "glob": "^10.2.6"
   },
   "config" : {
-    "serverPath" : "./test"
+    "serverPath" : "./src"
   }
 
 }
