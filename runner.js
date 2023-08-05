@@ -29,7 +29,7 @@ class Runner  {
             for(const route of this.gameRoutes ) {
 
                 //send the right page (depending of the url)
-                
+                console.log(route);
                 if(req.url == route.url) {
                     route.callback(req, res);
                 }
@@ -134,7 +134,8 @@ class Runner  {
     }
 
     async serveExternLibraries() {
-        let externFolder = __dirname + "/extern";
+        let externFolder = (__dirname + "/extern").replace(/\\/g,'/');
+        console.log(externFolder);
         let files  = await glob(externFolder+"/**");
         for(const file of files){
             if(fs.existsSync(file)){
