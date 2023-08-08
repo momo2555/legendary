@@ -134,7 +134,7 @@ class Runner  {
     }
 
     async serveExternLibraries() {
-        let externFolder = (__dirname + "/extern").replace(/\\/g,'/');
+        let externFolder = (__dirname + "/extern").replaceAll("\\", "/");
         console.log(externFolder);
         let files  = await glob(externFolder+"/**");
         for(const file of files){
@@ -142,7 +142,8 @@ class Runner  {
                 //windows :
                 var url = file.replaceAll("\\", "/");
                 // ------
-                url = url.replace(path.basename(externFolder), '/game/lib');
+                console.log(path.basename(externFolder));
+                url = '/game/lib/' +  url.split('/').pop()
                 console.log(url);
                 if(! this.externRouteExists(url) ) {
                     this.externRoutes.push({
