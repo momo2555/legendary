@@ -29,7 +29,7 @@ class Runner  {
             for(const route of this.gameRoutes ) {
 
                 //send the right page (depending of the url)
-                console.log(route);
+                
                 if(req.url == route.url) {
                     route.callback(req, res);
                 }
@@ -93,7 +93,7 @@ class Runner  {
 
     getContentType(file) {
         let contentType = "";
-        let ext = path.extname(file);
+        let ext = path.extname(file).substring(1);
         console.log(ext);
         switch(ext) {
             case 'html':
@@ -102,8 +102,8 @@ class Runner  {
             case 'css':
                 contentType = "text/css";
                 break;
-            case 'css':
-                contentType = "text/javascript";
+            case 'js':
+                contentType = "text/javascript; charset=utf-8";
                 break;
             case 'png', 'jpeg', 'bmp', 'gif', 'webp', 'jpg':
                 contentType = "image/" + ext;
@@ -114,6 +114,7 @@ class Runner  {
             case 'pdf', 'xml':
                 contentType = "application/"+ext;
         }
+            console.log(file + "; " + contentType);
             return contentType;
                 
     }
