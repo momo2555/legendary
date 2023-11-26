@@ -170,6 +170,11 @@
         this.send(dataToSend);
     }
 
+    updateStateElement(element, value) {
+        this.state[element] = value;
+        this.setState(this.state);
+    }
+
     getState() {
         return this.state;
     }
