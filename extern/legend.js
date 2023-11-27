@@ -9,6 +9,8 @@
         this.state = null;
         this.device = device;
         this.stateEvents = [];
+        this.deviceEvents = [];
+        this.deviceDataEvents = [];
         this.dataEvents = [];
         this.launchEvents = [];
         this.requestEvents = [];
@@ -101,6 +103,10 @@
 
                }else if(type=="data_exchange") {
                     this.exeDataListeners(data.header.from, data.data);
+               }else if(type=="device_event") {
+                    
+               }else if(type=="device_data") {
+                    
                }
            }
 
@@ -112,6 +118,18 @@
             if (req.request == request) {
                 req.callBack(data);
             }
+        }
+    }
+
+    execDeviceEventListeners(from, event) {
+        for(const listener of this.deviceEvents) {
+            listener(from, event);
+        }
+    }
+
+    execDeviceDataListeners(from, data) {
+        for(const listener of this.deviceDataEvents) {
+            listener(from, data);
         }
     }
 
@@ -148,9 +166,17 @@
         this.dataEvents.push(callback);
     }
 
+    onDeviceEvent(callback) {
+        this.deviceEvents.push(callback);
+    }
+
+    onDataEvent(callback) {
+        this.deviceDataEvents.push(callback);
+    }
+
     onLaunch(callback) {
         this.launchEvents.push(callback);
-    }
+    }data
 
     setState(state) {
         let dataToSend = {
