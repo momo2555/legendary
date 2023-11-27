@@ -104,6 +104,7 @@
                }else if(type=="data_exchange") {
                     this.exeDataListeners(data.header.from, data.data);
                }else if(type=="device_event") {
+                console.log("device_event received");
                     this.execDeviceEventListeners(data.header.from, data.event);
                }else if(type=="device_data") {
                     
