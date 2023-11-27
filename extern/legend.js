@@ -170,7 +170,7 @@
         this.deviceEvents.push(callback);
     }
 
-    onDataEvent(callback) {
+    onDeviceData(callback) {
         this.deviceDataEvents.push(callback);
     }
 
