@@ -177,7 +177,7 @@
 
     onLaunch(callback) {
         this.launchEvents.push(callback);
-    }data
+    }
 
     setState(state) {
         let dataToSend = {
