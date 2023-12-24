@@ -35,12 +35,9 @@
     identification() {
         let dataToSend = {
             header : {
-                type: "request",
+                type: "identification",
                 from: this.device,
             },
-            request: {
-                exec: "identification",
-            }
         }
         this.send(dataToSend);
     }
