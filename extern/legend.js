@@ -102,7 +102,7 @@
                     this.exeDataListeners(data.header.from, data.data);
                }else if(type=="device_event") {
                     console.log("device_event received");
-                    this.execDeviceEventListeners(data.header.from_addr, data.event);
+                    this.execDeviceEventListeners(data.header.device, data.header.from_addr, data.event);
                }else if(type=="device_data") {
                     
                }
@@ -119,9 +119,9 @@
         }
     }
 
-    execDeviceEventListeners(from, event) {
+    execDeviceEventListeners(name, from_addr, event) {
         for(const listener of this.deviceEvents) {
-            listener(from, event);
+            listener(name, from_addr, event);
         }
     }
 
