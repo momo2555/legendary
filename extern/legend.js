@@ -176,6 +176,16 @@
         this.launchEvents.push(callback);
     }
 
+    sensDeviceEvent() {
+        let dataToSend = {
+            header : {
+                type : "",
+                from  : this.device,
+                
+            }
+        };
+    }
+
     setState(state) {
         let dataToSend = {
             header : {
