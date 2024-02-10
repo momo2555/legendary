@@ -176,15 +176,32 @@
         this.launchEvents.push(callback);
     }
 
-    sensDeviceEvent() {
+    sendDeviceData(deviceAddr, data) {
         let dataToSend = {
             header : {
-                type : "",
+                type : "device_data",
                 from  : this.device,
-                
-            }
+                to : "device",
+                to_addr : deviceAddr,
+            },
+            data : data
         };
+        this.send(dataToSend);
     }
+
+    sendDeviceEvent(deviceAddr, event) {
+        let dataToSend = {
+            header : {
+                type : "device_event",
+                from  : this.device,
+                to : "device",
+                to_addr : deviceAddr,
+            },
+            event : event
+        };
+        this.send(dataToSend);
+    }
+
 
     setState(state) {
         let dataToSend = {
