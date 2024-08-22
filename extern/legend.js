@@ -3,7 +3,7 @@
  * necessary tools
  */
 
- class Legend {
+ export class Legend {
     constructor(device) {
         this.ws;
         this.state = null;
