@@ -3,7 +3,7 @@
  * necessary tools
  */
 
- export class Legend {
+export class Legend {
     constructor(device) {
         this.ws;
         this.state = null;
@@ -17,7 +17,7 @@
         this.initConnection();
         this.initMessagesEvent();
     }
-    
+
     initConnection() {
         this.hostname = window.location.hostname;
         this.ws = new WebSocket("ws://" + this.hostname + ":2225");
@@ -27,14 +27,14 @@
             this.identification();
         });
     }
-    
+
     /**
      * 
      * @param {Object} data must be a js object
      */
     identification() {
         let dataToSend = {
-            header : {
+            header: {
                 type: "identification",
                 from: this.device,
             },
@@ -52,7 +52,7 @@
         };
         this.send(dataToSend);
     }
-    sendToMonitor (data) {
+    sendToMonitor(data) {
         let dataToSend = {
             header: {
                 type: "data_exchange",
@@ -68,51 +68,50 @@
         let strData = JSON.stringify(data);
         this.ws.send(strData);
     }
-    
-    onReady (callback) {
+
+    onReady(callback) {
         this.ws.addEventListener("open", () => {
             callback();
         });
     }
 
     initMessagesEvent() {
-       this.ws.onmessage = (e)=>{
-           let data = JSON.parse(e.data);
-           //read the header
-           if(data.header.type!==undefined) {
-               let type = data.header.type;
-               if(type=="request") {
-                   //exec requesr listeners
-                   let request = data.request.exec;
-                   this.exeRequestListeners(request, data);
-                   switch(request) {
-                       case 'changeState':
-                        this.state = data.request.params.state;
-                           this.exeStateListeners(data.header.from, data.request.params.state);
-                           
-                       break;
-                       case 'launchGame':
-                           this.exeLaunchListeners(data.header.from, data.request.params.game)
-                       break;
-                       
+        this.ws.onmessage = (e) => {
+            let data = JSON.parse(e.data);
+            //read the header
+            if (data.header.type !== undefined) {
+                let type = data.header.type;
+                if (type == "request") {
+                    //exec requesr listeners
+                    let request = data.request.exec;
+                    this.exeRequestListeners(request, data);
+                    switch (request) {
+                        case 'changeState':
+                            this.state = data.request.params.state;
+                            this.exeStateListeners(data.header.from, data.request.params.state);
+                            break;
 
-                   }
+                        case 'launchGame':
+                            this.exeLaunchListeners(data.header.from, data.request.params.game)
+                            break;
 
-               }else if(type=="data_exchange") {
+                    }
+
+                } else if (type == "data_exchange") {
                     this.exeDataListeners(data.header.from, data.data);
-               }else if(type=="device_event") {
+                } else if (type == "device_event") {
                     console.log("device_event received");
                     this.execDeviceEventListeners(data.header.device, data.header.from_addr, data.event);
-               }else if(type=="device_data") {
-                    
-               }
-           }
+                } else if (type == "device_data") {
 
-       }
+                }
+            }
+
+        }
     }
-    
+
     exeRequestListeners(request, data) {
-        for(const req of this.requestEvents) {
+        for (const req of this.requestEvents) {
             if (req.request == request) {
                 req.callBack(data);
             }
@@ -120,31 +119,31 @@
     }
 
     execDeviceEventListeners(name, from_addr, event) {
-        for(const listener of this.deviceEvents) {
+        for (const listener of this.deviceEvents) {
             listener(name, from_addr, event);
         }
     }
 
     execDeviceDataListeners(from, data) {
-        for(const listener of this.deviceDataEvents) {
+        for (const listener of this.deviceDataEvents) {
             listener(from, data);
         }
     }
 
     exeDataListeners(from, data) {
-        for(const listener of this.dataEvents) {
+        for (const listener of this.dataEvents) {
             listener(from, data);
         }
     }
 
     exeStateListeners(from, state) {
-        for(const listener of this.stateEvents) {
+        for (const listener of this.stateEvents) {
             listener(from, state);
         }
     }
 
     exeLaunchListeners(from, gameId) {
-        for(const listener of this.launchEvents) {
+        for (const listener of this.launchEvents) {
             listener(from, gameId);
         }
     }
@@ -160,7 +159,7 @@
         this.stateEvents.push(callback);
     }
 
-    onData (callback) {
+    onData(callback) {
         this.dataEvents.push(callback);
     }
 
@@ -178,44 +177,63 @@
 
     sendDeviceData(deviceAddr, data) {
         let dataToSend = {
-            header : {
-                type : "device_data",
-                from  : this.device,
-                to : "device",
-                to_addr : deviceAddr,
+            header: {
+                type: "device_data",
+                from: this.device,
+                to: "device",
+                to_addr: deviceAddr,
             },
-            data : data
+            data: data
         };
         this.send(dataToSend);
     }
 
     sendDeviceEvent(deviceAddr, event) {
         let dataToSend = {
-            header : {
-                type : "device_event",
-                from  : this.device,
-                to : "device",
-                to_addr : deviceAddr,
+            header: {
+                type: "device_event",
+                from: this.device,
+                to: "device",
+                to_addr: deviceAddr,
             },
-            event : event
+            event: event
         };
         this.send(dataToSend);
     }
 
+    /**
+     * 
+     * @param {string} gameId 
+     */
+    getGamePlays(gameId) {
+        let dataToSend = {
+            header: {
+                type: "request",
+                from: this.device
+            },
+            request: {
+                exec: "getPlaysList",
+                params: {
+                    gameId: gameId
+                }
+            }
+        };
+        this.send(dataToSend);
+    }
 
     setState(state) {
         let dataToSend = {
-            header : {
-                type : "request",
+            header: {
+                type: "request",
                 from: this.device
             },
-            request : {
-                exec : "changeState",
-                params : {
-                    state : state
+            request: {
+                exec: "changeState",
+                params: {
+                    state: state
                 }
             }
-            
+
 
         };
         this.send(dataToSend);
@@ -231,10 +249,10 @@
     }
 
     launchGame(game) {
-        if(this.device=='monitor') {
+        if (this.device == 'monitor') {
             //lancement du jeu
             // TODO: send all the game data
-            window.location.href = '/'+game.monitor;
+            window.location.href = '/' + game.monitor;
         }
     }
 
