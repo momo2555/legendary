@@ -9,82 +9,82 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
-class Runner  {
+class Runner {
 
-    constructor (path) {
+    constructor(path) {
         this.path = path;
         this.gameRoutes = [];
         this.externRoutes = [];
         //app.use(express.static(this.path + '/images'));
     }
 
-    runHttpServer () {
+    runHttpServer() {
         this.launchGame(this.path);
         this.serveExternLibraries();
         this.serveApi();
-        
+
         //start the http server
         app.get('/game/*', (req, res) => {
             //the server is started !!! ;)
-            
-            for(const route of this.gameRoutes ) {
+
+            for (const route of this.gameRoutes) {
 
                 //send the right page (depending of the url)
-                
-                if(req.url == route.url) {
+
+                if (req.url == route.url) {
                     route.callback(req, res);
                 }
             }
-            for(const route of this.externRoutes ) {
+            for (const route of this.externRoutes) {
                 console.log(route);
                 //send the right page (depending of the url)
-                
-                if(req.url == route.url) {
+
+                if (req.url == route.url) {
                     route.callback(req, res);
                 }
             }
 
         });
-        
-        
+
+
         app.listen(2227);
     }
 
     async launchGame(gamePath) {
         //reading the game.json file
-        let data = fs.readFileSync(gamePath+'/game.json', {encoding: 'utf8'});
+        let data = fs.readFileSync(gamePath + '/game.json', { encoding: 'utf8' });
         //parse json
         let parsedata = JSON.parse(data);
         //fetch in the games folder for all files
         let gameFolder = gamePath;
         //add files in the htto route
-        
-        let files  = await glob(gameFolder+"/**");
-        for(const file of files){
-            if(fs.existsSync(file)){
+
+        let files = await glob(gameFolder + "/**");
+        for (const file of files) {
+            if (fs.existsSync(file)) {
                 //windows :
                 var url = file.replaceAll("\\", "/");
                 // ------
                 url = url.replace(path.basename(gameFolder), '/game');
-                
-                if(! this.gameRouteExists(url) ) {
+
+                if (!this.gameRouteExists(url)) {
                     this.gameRoutes.push({
                         url: url,
                         callback: (req, res) => {
-                            res.setHeader("Content-Type",this.getContentType(file));
+                            res.setHeader("Content-Type", this.getContentType(file));
                             res.writeHead(200);
-                            fs.readFile(file, (err, data)=>{
+                            fs.readFile(file, (err, data) => {
                                 res.end(data);
                             });
                         }
                     });
-                }else {
-                    
+                } else {
+
                 }
-                
+
             }
         }
-        
+
         //the game is launched
     }
 
@@ -92,7 +92,7 @@ class Runner  {
         let contentType = "";
         let ext = path.extname(file).substring(1);
         console.log(ext);
-        switch(ext) {
+        switch (ext) {
             case 'html':
                 contentType = "text/html";
                 break
@@ -106,28 +106,28 @@ class Runner  {
                 contentType = "image/" + ext;
                 break;
             case 'mp3', 'midi', 'mpeg', 'webm', 'ogg', 'wav':
-                contentType = "audio/"+ext;
+                contentType = "audio/" + ext;
                 break;
-            case 'pdf', 'xml':
-                contentType = "application/"+ext;
+            case 'pdf', 'xml', "json":
+                contentType = "application/" + ext;
         }
         console.log(file + "; " + contentType);
         return contentType;
-                
+
     }
 
     gameRouteExists(routeUrl) {
         let exist = false;
-        for(let route in this.gameRoutes) {
-            if(route.url == routeUrl) exist = true;
+        for (let route in this.gameRoutes) {
+            if (route.url == routeUrl) exist = true;
         }
         return exist;
     }
 
     externRouteExists(routeUrl) {
         let exist = false;
-        for(let route in this.externRoute) {
-            if(route.url == routeUrl) exist = true;
+        for (let route in this.externRoute) {
+            if (route.url == routeUrl) exist = true;
         }
         return exist;
     }
@@ -141,33 +141,71 @@ class Runner  {
             });
         });
 
+        // Get a play data
+        app.get('/game/api/playdata/:playid/:playfile', (req, res) => {
+            // get the game folder
+            // get the plays folder by play id
+            let error = "";
+            let gameId = process.env.GAME_ID;
+            let playId = req.params.playid;
+            let playFile = req.params.playfile;
+
+
+            let playsPath = "/koppelia/games/" + gameId + "/plays";
+            if (!fs.existsSync(playPath)) {
+                fs.mkdirSync(playsPath, { recursive: true });
+            }
+
+            // check if the play exist:
+            let playPath = playsPath + "/" + playId;
+            if (fs.existsSync(playPath)) {
+                // the play exist and it is downloaded
+                // find th eplayfile requested :
+                let filePath = playPath + "/" + playFile;
+                if (fs.existsSync(playPath)) {
+                    res.setHeader("Content-Type", this.getContentType(filePath));
+                    res.writeHead(200);
+                    fs.readFile(filePath, (err, data) => {
+                        res.end(data);
+                    });
+                    return
+                } else {
+                    error = "Cannot found the file " + playFile + " in the play with id " + playId;
+                }
+
+            } else {
+                error = "The play is not downloaded (play not found)";
+            }
+
+        });
+
     }
 
     async serveExternLibraries() {
         let externFolder = (__dirname + "/extern").replaceAll("\\", "/");
         console.log(externFolder);
-        let files  = await glob(externFolder+"/**");
-        for(const file of files){
-            if(fs.existsSync(file)){
+        let files = await glob(externFolder + "/**");
+        for (const file of files) {
+            if (fs.existsSync(file)) {
                 //windows :
                 var url = file.replaceAll("\\", "/");
                 // ------
                 console.log(path.basename(externFolder));
-                url = '/game/lib/' +  url.split('/').pop()
+                url = '/game/lib/' + url.split('/').pop()
                 console.log(url);
-                if(! this.externRouteExists(url) ) {
+                if (!this.externRouteExists(url)) {
                     this.externRoutes.push({
                         url: url,
                         callback: (req, res) => {
-                            res.setHeader("Content-Type",this.getContentType(file));
+                            res.setHeader("Content-Type", this.getContentType(file));
                             res.writeHead(200);
-                            fs.readFile(file, (err, data)=>{
+                            fs.readFile(file, (err, data) => {
                                 res.end(data);
                             });
                         }
                     });
                 }
-                
+
             }
         }
     }

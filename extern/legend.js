@@ -222,7 +222,7 @@ export class Legend {
         this.send(dataToSend);
     }
 
-    
+
     getGamePlays() {
         let dataToSend = {
             header: {
@@ -237,6 +237,34 @@ export class Legend {
             }
         };
         this.send(dataToSend);
+    }
+
+    async parsePlayFile(playId, playFileName, format) {
+        let url = "http://localhost:2227/game/api/playdata/" + playId + "/" + playFileName;
+        try {
+            let response = await fetch(url);
+            if (!response.ok) {
+                throw new Error("Error");
+            }
+            if (format == "json") {
+                const data = await response.json();
+                return data;
+            } else {
+                const data = await response.blob();
+                return data;
+            }
+
+            
+        } catch (e) {
+
+        }
+    }
+
+    async parseGamePlay(playId, playData) {
+        // parse the josn of the play :
+        playData.play_json = await this.parsePlayFile(playId, playData.play_file_name, "json");
+        playData.play_image = await this.parsePlayFile(playId, playData.play_image, "img");
+        return playData;
     }
 
     setState(state) {
