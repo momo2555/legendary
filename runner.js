@@ -21,6 +21,7 @@ class Runner  {
     runHttpServer () {
         this.launchGame(this.path);
         this.serveExternLibraries();
+        this.serveApi();
         
         //start the http server
         app.get('/game/*', (req, res) => {
@@ -44,12 +45,8 @@ class Runner  {
             }
 
         });
-        /*app.get('/game/lib/*', (req, res) => {
-            //the server is started !!! ;)
-            print("wesh");
-            
-
-        });*/
+        
+        
         app.listen(2227);
     }
 
@@ -114,8 +111,8 @@ class Runner  {
             case 'pdf', 'xml':
                 contentType = "application/"+ext;
         }
-            console.log(file + "; " + contentType);
-            return contentType;
+        console.log(file + "; " + contentType);
+        return contentType;
                 
     }
 
@@ -126,12 +123,26 @@ class Runner  {
         }
         return exist;
     }
+
     externRouteExists(routeUrl) {
         let exist = false;
         for(let route in this.externRoute) {
             if(route.url == routeUrl) exist = true;
         }
         return exist;
+    }
+
+    serveApi() {
+
+        // Get the game ID
+        app.get('/game/gameid', (req, res) => {
+            res.setHeader("Content-Type", "application/json");
+            res.writeHead(200);
+            res.end({
+                gameId: process.env.GAME_ID,
+            });
+        });
+
     }
 
     async serveExternLibraries() {
