@@ -152,7 +152,7 @@ class Runner {
 
 
             let playsPath = "/koppelia/games/" + gameId + "/plays";
-            if (!fs.existsSync(playPath)) {
+            if (!fs.existsSync(playsPath)) {
                 fs.mkdirSync(playsPath, { recursive: true });
             }
 
