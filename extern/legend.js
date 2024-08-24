@@ -45,7 +45,7 @@ export class Legend {
     }
 
     getGameId() {
-        url = "http://localhost:2227/game/api/gameid"
+        let url = "http://localhost:2227/game/api/gameid";
         fetch(url)
             .then(response => {
                 if (!response.ok) {
