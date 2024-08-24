@@ -4,7 +4,7 @@ const config = require("./package.json").config;
 
 
 exports.run =  function (path = "") {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'prod') {
         require('dotenv').config();
     }
 
