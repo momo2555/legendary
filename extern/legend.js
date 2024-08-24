@@ -17,6 +17,7 @@ export class Legend {
         this.gameId = "";
         this.initConnection();
         this.initMessagesEvent();
+        this.getGameId();
     }
 
     initConnection() {
