@@ -135,7 +135,7 @@ class Runner  {
     serveApi() {
 
         // Get the game ID
-        app.get('/game/gameid', (req, res) => {
+        app.get('/game/api/gameid', (req, res) => {
             res.json({
                 gameId: process.env.GAME_ID,
             });

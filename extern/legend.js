@@ -14,6 +14,7 @@ export class Legend {
         this.dataEvents = [];
         this.launchEvents = [];
         this.requestEvents = [];
+        this.gameId = "";
         this.initConnection();
         this.initMessagesEvent();
     }
@@ -41,6 +42,24 @@ export class Legend {
         }
         this.send(dataToSend);
     }
+
+    getGameId() {
+        url = "http://localhost:2227/game/api/gameid"
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.gameId = data.gameId;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
     sendToController(data) {
         let dataToSend = {
             header: {
@@ -52,6 +71,7 @@ export class Legend {
         };
         this.send(dataToSend);
     }
+
     sendToMonitor(data) {
         let dataToSend = {
             header: {
@@ -201,11 +221,8 @@ export class Legend {
         this.send(dataToSend);
     }
 
-    /**
-     * 
-     * @param {string} gameId 
-     */
-    getGamePlays(gameId) {
+    
+    getGamePlays() {
         let dataToSend = {
             header: {
                 type: "request",
@@ -214,7 +231,7 @@ export class Legend {
             request: {
                 exec: "getPlaysList",
                 params: {
-                    gameId: gameId
+                    gameId: this.gameId
                 }
             }
         };
