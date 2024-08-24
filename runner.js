@@ -136,9 +136,7 @@ class Runner  {
 
         // Get the game ID
         app.get('/game/gameid', (req, res) => {
-            res.setHeader("Content-Type", "application/json");
-            res.writeHead(200);
-            res.end({
+            res.json({
                 gameId: process.env.GAME_ID,
             });
         });
