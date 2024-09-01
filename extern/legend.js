@@ -44,6 +44,10 @@ export class Legend {
         this.send(dataToSend);
     }
 
+    /**
+     * Get the Id of the game
+     * The is is set by filarmonic, or if run on local set in the .env file
+     */
     getGameId() {
         let url = "http://localhost:2227/game/api/gameid";
         fetch(url)
@@ -222,7 +226,6 @@ export class Legend {
         this.send(dataToSend);
     }
 
-
     getGamePlays() {
         let dataToSend = {
             header: {
@@ -239,6 +242,26 @@ export class Legend {
         this.send(dataToSend);
     }
 
+    async blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            // Set up the onload event to resolve the promise with the base64 result
+            reader.onloadend = function () {
+                resolve(reader.result);  // Resolve the promise with the Base64 string
+            };
+
+            // Handle any errors during reading
+            reader.onerror = function () {
+                reject(new Error('Error reading the Blob as Base64'));
+            };
+
+            // Start reading the Blob as a Data URL (Base64 encoded string)
+            reader.readAsDataURL(blob);
+        });
+    }
+
+
     async parsePlayFile(playId, playFileName, format) {
         let url = "http://localhost:2227/game/api/playdata/" + playId + "/" + playFileName;
         try {
@@ -250,13 +273,17 @@ export class Legend {
                 const data = await response.json();
                 return data;
             } else {
-                const data = await response.blob();
+                let data = await response.blob();
+                if (format == 'img') {
+                    data = await this.blobToBase64(data);
+                }
+
                 return data;
             }
 
-            
-        } catch (e) {
 
+        } catch (e) {
+            console.log("An error occured" + e);
         }
     }
 
