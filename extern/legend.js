@@ -49,7 +49,7 @@ export class Legend {
      * The is is set by filarmonic, or if run on local set in the .env file
      */
     getGameId() {
-        let url = "http://" + this.hostname + ":2227/game/api/gameid";
+        let url = "http://localhost:2227/game/api/gameid";
         fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -263,7 +263,7 @@ export class Legend {
 
 
     async parsePlayFile(playId, playFileName, format) {
-        let url = "http://" + this.hostname + ":2227/game/api/playdata/" + playId + "/" + playFileName;
+        let url = "http://localhost:2227/game/api/playdata/" + playId + "/" + playFileName;
         try {
             let response = await fetch(url);
             if (!response.ok) {
@@ -276,6 +276,7 @@ export class Legend {
                 let data = await response.blob();
                 if (format == 'img') {
                     data = await this.blobToBase64(data);
+                    console.log("img base 64 = " + data);
                 }
 
                 return data;
@@ -314,6 +315,13 @@ export class Legend {
 
     updateStateElement(element, value) {
         this.state[element] = value;
+        this.setState(this.state);
+    }
+
+    updateState(partialState) {
+        for (let key in partialState) {
+            this.state[key] = partialState[key];
+        }
         this.setState(this.state);
     }
 
