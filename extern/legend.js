@@ -49,7 +49,7 @@ export class Legend {
      * The is is set by filarmonic, or if run on local set in the .env file
      */
     getGameId() {
-        let url = "http://localhost:2227/game/api/gameid";
+        let url = "http://" + this.hostname + ":2227/game/api/gameid";
         fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -263,7 +263,7 @@ export class Legend {
 
 
     async parsePlayFile(playId, playFileName, format) {
-        let url = "http://localhost:2227/game/api/playdata/" + playId + "/" + playFileName;
+        let url = "http://" + this.hostname + ":2227/game/api/playdata/" + playId + "/" + playFileName;
         try {
             let response = await fetch(url);
             if (!response.ok) {
