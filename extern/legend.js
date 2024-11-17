@@ -226,6 +226,38 @@ export class Legend {
         this.send(dataToSend);
     }
 
+    enableVerticalDetector(deviceAddr) {
+        let dataToSend = {
+            header: {
+                type: "module_enable",
+                from: this.device,
+                to: "device",
+                to_addr: deviceAddr,
+            },
+            data: [
+                {type: "bool", vDetct: true }
+            ]
+        };
+        this.send(dataToSend);
+
+    }
+
+    enableZPosition(deviceAddr) {
+        let dataToSend = {
+            header: {
+                type: "module_enable",
+                from: this.device,
+                to: "device",
+                to_addr: deviceAddr,
+            },
+            data: [
+                {type: "int", zPos: true }
+            ]
+        };
+        this.send(dataToSend);
+
+    }
+
     getGamePlays() {
         let dataToSend = {
             header: {
