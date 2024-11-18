@@ -128,7 +128,7 @@ export class Legend {
                     console.log("device_event received");
                     this.execDeviceEventListeners(data.header.device, data.header.from_addr, data.event);
                 } else if (type == "device_data") {
-                    this.execDeviceDataListeners(data.header.from_addr, data.event);
+                    this.execDeviceDataListeners(data.header.from_addr, data.data);
                 }
             }
 
